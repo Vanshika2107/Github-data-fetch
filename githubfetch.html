@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+        </style>
+</head>
+<body>
+    <input type="text" id="username" placeholder="Enter GitHub username">
+    <button id="fetchButton">Fetch Repositories</button>
+    <div id="profile"></div>
+    <script>
+        let fetchButton = document.querySelector("#fetchButton");
+        fetchButton.addEventListener('click', (event) => {
+            let username=document.querySelector("#username").value;
+            fetch(`https://api.github.com/users/${username}`)
+            .then((res)=>{
+                if(!res.ok){
+                    throw new Error("Network response was not ok");
+                }
+                return res.json();
+        })
+            .then((data)=>{
+                let profile=document.querySelector("#profile");
+                profile.innerHTML="";
+                let img=document.createElement("img");
+                img.setAttribute("src", data.avatar_url);
+                img.setAttribute("alt", "User Avatar");
+                img.classList.add("circle");
+                profile.appendChild(img);
+                // Create and append the followers
+                let followers=document.createElement("p");
+                followers.textContent=`Followers: ${data.followers}`;
+                profile.appendChild(followers);
+                // Create and append the following
+                let following=document.createElement("p");
+                following.setAttribute("id", "following");
+                following.textContent=`Following: ${data.following}`;
+                profile.appendChild(following);
+                // Create and append the public repositories
+                let repos=document.createElement("p");
+                repos.setAttribute("id", "repos_url");
+                repos.textContent=`Repositories: ${data.public_repos}`;
+                profile.appendChild(repos);
+            })
+            .catch((err)=>{
+                console.log(err);
+            });
+        });
+    </script>
+</body>
+</html>
